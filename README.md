@@ -22,6 +22,7 @@ This hosts all the snippets for different utility types that are useful for cert
 - [Utility types](#utility-types)
   - [Copy\<T\>](#copyt)
   - [DeepNonNullable\<T\>](#deepnonnullablet)
+  - [DeepNonReadonly\<T\>](#deepnonreadonlyt)
   - [DeepNullable\<T\>](#deepnullablet)
   - [DeepPartial\<T\>](#deeppartialt)
   - [DeepReadonly\<T\>](#deepreadonlyt)
@@ -96,6 +97,45 @@ type DeepNonNullable<T> = Copy<NonNullable<{
 //     };
 // }
 type ADeepNonNullable = DeepNonNullable<DeepNullable<{
+    a: boolean;
+    b: [
+        {
+            c: boolean;
+        }
+    ];
+    d: {
+        e: boolean;
+        f: [
+            {
+                 g: boolean;
+            }
+        ];
+    };
+}>>;
+```
+
+### DeepNonReadonly\<T\>
+
+```ts
+type DeepNonReadonly<T> = Copy<{
+    -readonly [K in keyof T]: DeepNonReadonly<T[K]>;
+}>;
+```
+
+```ts
+// {
+//     a: boolean;
+//     b: [{
+//         c: boolean;
+//     }];
+//     d: {
+//         e: boolean;
+//         f: [{
+//             g: boolean;
+//         }];
+//     };
+// }
+type ADeepNonReadonly = DeepNonReadonly<DeepReadonly<{
     a: boolean;
     b: [
         {
@@ -336,14 +376,12 @@ type ExcludeKey<T, K extends keyof T> = Exclude<keyof T, K>;
 ```
 
 ```ts
-interface A {
+// 'a' | 'c'
+type AExcludeKey = ExcludeKey<{
   a: boolean;
   b: number;
   c: string;
-}
-
-// 'a' | 'c'
-type AExcludeKey = ExcludeKey<A, 'b'>;
+}, 'b'>;
 ```
 
 ### ExtractKey\<T, K\>
@@ -355,14 +393,12 @@ type ExtractKey<T, K extends keyof T> = Extract<keyof T, K>;
 ```
 
 ```ts
-interface A {
+// 'b'
+type AExtractKey = ExtractKey<{
   a: boolean;
   b: number;
   c: string;
-}
-
-// 'b'
-type AExtractKey = ExtractKey<A, 'b'>;
+}, 'b'>;
 ```
 
 ### Merge\<T, U\>
@@ -458,14 +494,12 @@ type Values<T> = T extends {
 ```
 
 ```ts
-interface A {
+// boolean | number | string
+type AValues = Values<{
   a: boolean;
   b: number;
   c: string;
-}
-
-// boolean | number | string
-type AValues = Values<A>;
+}>;
 ```
 
 ## License
