@@ -28,7 +28,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [DeepRequired\<T\>](#deeprequiredt)
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
-  - [Merge\<T\>](#merget)
+  - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T\>](#nullish--nullablet)
   - [TupleRecord\<T\>](#tuplerecordt)
   - [Values\<T\>](#valuest)
@@ -365,12 +365,10 @@ interface A {
 type AExtractKey = ExtractKey<A, 'b'>;
 ```
 
-### Merge\<T\>
+### Merge\<T, U\>
 
 ```ts
-type DeepPartial<T> = Copy<{
-    [K in keyof T]?: DeepPartial<T[K]>;
-}>;
+type Merge<T, U> = Copy<Omit<T, keyof U> & U>;
 ```
 
 ```ts
