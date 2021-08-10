@@ -460,16 +460,16 @@ type ANullable = Nullable<number>;
 ### TupleRecord\<T\>
 
 ```ts
-type TupleRecord<T extends (unknown [] | ReadonlyArray<unknown>)> = {
-    keys: T extends infer U ? U : never;
+type TupleRecord<T extends (unknown [] | ReadonlyArray<unknown>)> = DeepReadonly<{
+    keys: T[number];
     values: T;
-};
+}>;
 ```
 
 ```ts
 // {
-//     keys: ["a", "b"];
-//     values: ["a", "b"];
+//     readonly keys: "a" | "b";
+//     readonly values: readonly ["a", "b"];
 // }
 type ATupleRecord = TupleRecord<[
     'a',
@@ -479,8 +479,8 @@ type ATupleRecord = TupleRecord<[
 const a2 = ['a', 'b'] as const;
 
 // {
-//     keys: readonly ["a", "b"];
-//     values: readonly ["a", "b"];
+//     readonly keys: "a" | "b";
+//     readonly values: readonly ["a", "b"];
 // }
 type ATupleRecord2 = TupleRecord<typeof a2>;
 ```
