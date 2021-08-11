@@ -20,7 +20,7 @@ This hosts all the snippets for different utility types that are useful for cert
 
 - [Pre-requisite](#pre-requisite)
 - [Utility types](#utility-types)
-  - [Copy\<T\>](#copyt)
+  - [Cloned\<T\>](#clonedt)
   - [DeepNonNullable\<T\>](#deepnonnullablet)
   - [DeepNonReadonly\<T\>](#deepnonreadonlyt)
   - [DeepNullable\<T\>](#deepnullablet)
@@ -41,10 +41,10 @@ This hosts all the snippets for different utility types that are useful for cert
 
 ## Utility types
 
-### Copy\<T\>
+### Cloned\<T\>
 
 ```ts
-type Copy<T> = T extends object ? {
+type Cloned<T> = T extends object ? {
     [K in keyof T]: T[K];
 } : T;
 ```
@@ -61,7 +61,7 @@ interface A {
 //   b: number;
 //   c: string;
 // }
-type ACopy = Copy<A>;
+type ACloned = Cloned<A>;
 
 // A & { d: boolean }
 type B = A & { d: boolean };
@@ -72,13 +72,13 @@ type B = A & { d: boolean };
 //   c: string;
 //   d: boolean;
 // }
-type BCopy = Copy<B>;
+type BCloned = Cloned<B>;
 ```
 
 ### DeepNonNullable\<T\>
 
 ```ts
-type DeepNonNullable<T> = Copy<NonNullable<{
+type DeepNonNullable<T> = Cloned<NonNullable<{
     [K in keyof T]: DeepNonNullable<T[K]>;
 }>>;
 ```
@@ -117,7 +117,7 @@ type ADeepNonNullable = DeepNonNullable<DeepNullable<{
 ### DeepNonReadonly\<T\>
 
 ```ts
-type DeepNonReadonly<T> = Copy<{
+type DeepNonReadonly<T> = Cloned<{
     -readonly [K in keyof T]: DeepNonReadonly<T[K]>;
 }>;
 ```
@@ -156,7 +156,7 @@ type ADeepNonReadonly = DeepNonReadonly<DeepReadonly<{
 ### DeepNullable\<T\>
 
 ```ts
-type DeepNullable<T, U extends Nullish = null | undefined> = Copy<{
+type DeepNullable<T, U extends Nullish = null | undefined> = Cloned<{
     [K in keyof T]: DeepNullable<T[K], U> | U;
 }>;
 ```
@@ -253,7 +253,7 @@ type ANullableUndefined = DeepNullable<{
 ### DeepPartial\<T\>
 
 ```ts
-type DeepPartial<T> = Copy<{
+type DeepPartial<T> = Cloned<{
     [K in keyof T]?: DeepPartial<T[K]>;
 }>;
 ```
@@ -292,7 +292,7 @@ type ADeepPartial = DeepPartial<{
 ### DeepReadonly\<T\>
 
 ```ts
-type DeepReadonly<T> = Copy<{
+type DeepReadonly<T> = Cloned<{
     readonly [K in keyof T]: DeepReadonly<T[K]>;
 }>;
 ```
@@ -331,7 +331,7 @@ type ADeepReadonly = DeepReadonly<{
 ### DeepRequired\<T\>
 
 ```ts
-type DeepRequired<T> = Copy<{
+type DeepRequired<T> = Cloned<{
     [K in keyof T]-?: DeepRequired<T[K]>;
 }>;
 ```
@@ -404,7 +404,7 @@ type AExtractKey = ExtractKey<{
 ### Merge\<T, U\>
 
 ```ts
-type Merge<T, U> = Copy<Omit<T, keyof U> & U>;
+type Merge<T, U> = Cloned<Omit<T, keyof U> & U>;
 ```
 
 ```ts
@@ -443,7 +443,7 @@ type AMerge = Merge<A, {
 
 ```ts
 type Nullish = null | undefined;
-type Nullable<T> = Copy<T | Nullish>;
+type Nullable<T> = Cloned<T | Nullish>;
 ```
 
 ```ts
@@ -451,7 +451,7 @@ type Nullable<T> = Copy<T | Nullish>;
 type ANullish = number | Nullish;
 
 // number | null | undefined
-type ANullish2 = Copy<number | Nullish>;
+type ANullish2 = Cloned<number | Nullish>;
 
 // number | null | undefined;
 type ANullable = Nullable<number>;
