@@ -30,6 +30,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
   - [Merge\<T, U\>](#merget-u)
+  - [OmitKey\<T\>](#omitkeyt)
   - [Nullish + Nullable\<T\>](#nullish--nullablet)
   - [TupleRecord\<T\>](#tuplerecordt)
   - [Values\<T\>](#valuest)
@@ -437,6 +438,31 @@ type AMerge = Merge<A, {
   c: boolean;
   d: number;
 }>
+```
+
+### OmitKey\<T\>
+
+```ts
+type OmitKey<T, K extends keyof T> = Omit<T, K>;
+```
+
+```ts
+interface A {
+    a: boolean;
+    b: number;
+    c: string;
+}
+
+// {
+//     a: boolean;
+//     c: string;
+// }
+type AOmitKey = OmitKey<A, 'b'>;
+
+// {
+//     c: string;
+// }
+type BOmitKey = OmitKey<A, 'b' | 'a'>;
 ```
 
 ### Nullish + Nullable\<T\>
