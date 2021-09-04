@@ -31,7 +31,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
   - [Merge\<T, U\>](#merget-u)
-  - [Nullish + Nullable\<T\>](#nullish--nullablet)
+  - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
   - [OmitKey\<T\>](#omitkeyt)
   - [TupleRecord\<T\>](#tuplerecordt)
   - [Values\<T\>](#valuest)
@@ -457,11 +457,11 @@ type AMerge = Merge<A, {
 }>
 ```
 
-### Nullish + Nullable\<T\>
+### Nullish + Nullable\<T, U\>
 
 ```ts
 type Nullish = null | undefined;
-type Nullable<T> = Cloned<T | Nullish>;
+type Nullable<T, U extends Nullish = null | undefined> = Cloned<T | U>;
 ```
 
 ```ts
@@ -473,6 +473,12 @@ type ANullish2 = Cloned<number | Nullish>;
 
 // number | null | undefined;
 type ANullable = Nullable<number>;
+
+// number | null;
+type ANullableNull = Nullable<number, null>;
+
+// number | undefined;
+type ANullableUndefined = Nullable<number, undefined>;
 ```
 
 ### OmitKey\<T\>
