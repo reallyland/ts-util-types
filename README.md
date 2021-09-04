@@ -31,8 +31,8 @@ This hosts all the snippets for different utility types that are useful for cert
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
   - [Merge\<T, U\>](#merget-u)
-  - [OmitKey\<T\>](#omitkeyt)
   - [Nullish + Nullable\<T\>](#nullish--nullablet)
+  - [OmitKey\<T\>](#omitkeyt)
   - [TupleRecord\<T\>](#tuplerecordt)
   - [Values\<T\>](#valuest)
 - [License](#license)
@@ -457,6 +457,24 @@ type AMerge = Merge<A, {
 }>
 ```
 
+### Nullish + Nullable\<T\>
+
+```ts
+type Nullish = null | undefined;
+type Nullable<T> = Cloned<T | Nullish>;
+```
+
+```ts
+// number | Nullish
+type ANullish = number | Nullish;
+
+// number | null | undefined
+type ANullish2 = Cloned<number | Nullish>;
+
+// number | null | undefined;
+type ANullable = Nullable<number>;
+```
+
 ### OmitKey\<T\>
 
 ```ts
@@ -480,24 +498,6 @@ type AOmitKey = OmitKey<A, 'b'>;
 //     c: string;
 // }
 type BOmitKey = OmitKey<A, 'b' | 'a'>;
-```
-
-### Nullish + Nullable\<T\>
-
-```ts
-type Nullish = null | undefined;
-type Nullable<T> = Cloned<T | Nullish>;
-```
-
-```ts
-// number | Nullish
-type ANullish = number | Nullish;
-
-// number | null | undefined
-type ANullish2 = Cloned<number | Nullish>;
-
-// number | null | undefined;
-type ANullable = Nullable<number>;
 ```
 
 ### TupleRecord\<T\>
