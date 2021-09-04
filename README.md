@@ -461,7 +461,9 @@ type AMerge = Merge<A, {
 
 ```ts
 type Nullish = null | undefined;
-type Nullable<T, U extends Nullish = null | undefined> = Cloned<T | U>;
+
+// Workaround to expand Nullish with U extends Nullish
+type Nullable<T, U extends Nullish = Nullish> = Cloned<U extends Nullish ? T | U : T | U>;
 ```
 
 ```ts
