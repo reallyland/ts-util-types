@@ -27,6 +27,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [DeepPartial\<T\>](#deeppartialt)
   - [DeepReadonly\<T\>](#deepreadonlyt)
   - [DeepRequired\<T\>](#deeprequiredt)
+  - [Entries\<T\>](#entriest)
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
   - [Merge\<T, U\>](#merget-u)
@@ -366,6 +367,22 @@ type ADeepRequired = DeepRequired<DeepPartial<{
         ];
     };
 }>>;
+```
+
+### Entries\<T\>
+
+```ts
+type Entries<T> = {
+    [K in keyof T]: [K, T[K]];
+}[keyof T][];
+```
+
+```ts
+// (["a", "a1"] | ["b", "b1"])[]
+type AEntries = Entries<{
+    a: 'a1',
+    b: 'b1',
+}>;
 ```
 
 ### ExcludeKey\<T, K\>
