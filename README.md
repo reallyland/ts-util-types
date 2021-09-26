@@ -21,6 +21,7 @@ This hosts all the snippets for different utility types that are useful for cert
 - [Pre-requisite](#pre-requisite)
 - [Utility types](#utility-types)
   - [Cloned\<T\>](#clonedt)
+  - [DeepExecWith\<T\>](#deepexecwitht)
   - [DeepNonNullable\<T\>](#deepnonnullablet)
   - [DeepNonReadonly\<T\>](#deepnonreadonlyt)
   - [DeepNullable\<T\>](#deepnullablet)
@@ -46,9 +47,9 @@ This hosts all the snippets for different utility types that are useful for cert
 ### Cloned\<T\>
 
 ```ts
-type Cloned<T> = T extends object ? {
-    [K in keyof T]: T[K];
-} : T;
+type Cloned<T> = DeepExecWith<T, {
+    [K in keyof T]: Cloned<T[K]>;
+}>;
 ```
 
 ```ts
@@ -77,12 +78,91 @@ type B = A & { d: boolean };
 type BCloned = Cloned<B>;
 ```
 
+### DeepExecWith\<T\>
+
+```ts
+type DeepExecWith<T, Condition> = T extends Record<string, unknown>
+    ? Condition
+    : T extends (...args: any) => unknown
+        ? T
+        : Condition;
+```
+
+```ts
+type NeverPrimitives<T> = DeepExecWith<T, {
+    [K in keyof T]: T[K] extends object ? NeverPrimitives<T[K]> : never;
+}>;
+
+// {
+//     a: () => void;
+//     b: {
+//         c: never;
+//         d: [never, never, never];
+//         e: (a?: string | undefined) => Promise<void>;
+//         f: never;
+//         g: never;
+//         h: never;
+//         i: {
+//             toString: () => string;
+//             valueOf: () => symbol;
+//             readonly description: never;
+//         };
+//         j: {
+//             toString: (radix?: number | undefined) => string;
+//             toLocaleString: (locales?: string | undefined, options?: BigIntToLocaleStringOptions | undefined) => string;
+//             valueOf: () => bigint;
+//         };
+//         k: never;
+//     };
+//     c: never;
+//     d: [never, never, never];
+//     e: (a?: string | undefined) => Promise<void>;
+//     f: never;
+//     g: never;
+//     h: never;
+//     i: {
+//         toString: () => string;
+//         valueOf: () => symbol;
+//         readonly description: never;
+//     };
+//     j: {
+//         toString: (radix?: number | undefined) => string;
+//         toLocaleString: (locales?: string | undefined, options?: BigIntToLocaleStringOptions | undefined) => string;
+//         valueOf: () => bigint;
+//     };
+//     k: never;
+// }
+type ANeverPrimitives = NeverPrimitives<{
+    a(): void;
+    b: {
+        c: 1;
+        d: [1, 2, 3];
+        e(a?: string): Promise<void>;
+        f: '1';
+        g: null;
+        h: undefined;
+        i: Symbol;
+        j: BigInt;
+        k: true;
+    };
+    c: 1;
+    d: [1, 2, 3];
+    e(a?: string): Promise<void>;
+    f: '1';
+    g: null;
+    h: undefined;
+    i: Symbol;
+    j: BigInt;
+    k: true;
+}>;
+```
+
 ### DeepNonNullable\<T\>
 
 ```ts
-type DeepNonNullable<T> = Cloned<NonNullable<{
+type DeepNonNullable<T> = Cloned<DeepExecWith<T, NonNullable<{
     [K in keyof T]: DeepNonNullable<T[K]>;
-}>>;
+}>>>;
 ```
 
 ```ts
@@ -119,9 +199,9 @@ type ADeepNonNullable = DeepNonNullable<DeepNullable<{
 ### DeepNonReadonly\<T\>
 
 ```ts
-type DeepNonReadonly<T> = Cloned<{
+type DeepNonReadonly<T> = Cloned<DeepExecWith<T, {
     -readonly [K in keyof T]: DeepNonReadonly<T[K]>;
-}>;
+}>>;
 ```
 
 ```ts
@@ -158,9 +238,9 @@ type ADeepNonReadonly = DeepNonReadonly<DeepReadonly<{
 ### DeepNullable\<T\>
 
 ```ts
-type DeepNullable<T, U extends Nullish = null | undefined> = Cloned<{
+type DeepNullable<T, U extends Nullish = null | undefined> = Cloned<DeepExecWith<T, {
     [K in keyof T]: DeepNullable<T[K], U> | U;
-}>;
+}>>;
 ```
 
 ```ts
@@ -255,9 +335,9 @@ type ANullableUndefined = DeepNullable<{
 ### DeepPartial\<T\>
 
 ```ts
-type DeepPartial<T> = Cloned<{
+type DeepPartial<T> = Cloned<DeepExecWith<T, {
     [K in keyof T]?: DeepPartial<T[K]>;
-}>;
+}>>;
 ```
 
 ```ts
@@ -294,9 +374,9 @@ type ADeepPartial = DeepPartial<{
 ### DeepReadonly\<T\>
 
 ```ts
-type DeepReadonly<T> = Cloned<{
+type DeepReadonly<T> = Cloned<DeepExecWith<T, {
     readonly [K in keyof T]: DeepReadonly<T[K]>;
-}>;
+}>>;
 ```
 
 ```ts
@@ -333,9 +413,9 @@ type ADeepReadonly = DeepReadonly<{
 ### DeepRequired\<T\>
 
 ```ts
-type DeepRequired<T> = Cloned<{
+type DeepRequired<T> = Cloned<DeepExecWith<T, {
     [K in keyof T]-?: DeepRequired<T[K]>;
-}>;
+}>>;
 ```
 
 ```ts
