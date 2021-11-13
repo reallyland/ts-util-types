@@ -34,6 +34,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
   - [OmitKey\<T\>](#omitkeyt)
+  - [Pop\<T\>](#popt)
   - [Shift\<T\>](#shiftt)
   - [ShiftUntil\<T, Key\>](#shiftuntilt-key)
   - [TupleRecord\<T\>](#tuplerecordt)
@@ -589,6 +590,24 @@ type AOmitKey = OmitKey<A, 'b'>;
 //     c: string;
 // }
 type BOmitKey = OmitKey<A, 'b' | 'a'>;
+```
+
+### Pop\<T\>
+
+```ts
+type Pop<T extends readonly unknown[] | unknown[]> =
+  T extends readonly [...infer _ReadonlyRest, infer ReadonlyLast]
+    ? T extends [...infer _Rest, infer Last]
+      ? Last
+      : Readonly<ReadonlyLast>
+    : never;
+```
+
+```ts
+type APop = Pop<['a']>; // 'a'
+type BPop = Pop<['a', 'b']>; // 'b'
+type CPop = Pop<readonly ['a']>; // 'a'
+type DPop = Pop<readonly ['a', 'b']>; // 'b'
 ```
 
 ### Shift\<T\>
