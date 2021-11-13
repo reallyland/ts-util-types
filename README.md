@@ -31,6 +31,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Entries\<T\>](#entriest)
   - [ExcludeKey\<T, K\>](#excludekeyt-k)
   - [ExtractKey\<T, K\>](#extractkeyt-k)
+  - [Flatten\<T\>](#flattent)
   - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
   - [OmitKey\<T\>](#omitkeyt)
@@ -501,6 +502,45 @@ type AExtractKey = ExtractKey<{
   b: number;
   c: string;
 }, 'b'>;
+```
+
+### Flatten\<T\>
+
+```ts
+type Flatten<T extends readonly unknown[] | unknown[]> =
+  T extends readonly [infer ReadonlyFirst, ...infer ReadonlyRest]
+    ? T extends [infer First, ...infer Rest]
+      ? [
+          ...(
+            First extends readonly unknown[] | unknown[]
+                ? Flatten<First>
+                : [First]
+          ),
+          ...Flatten<Rest>
+        ]
+      : Readonly<[
+          ...(
+            ReadonlyFirst extends readonly unknown[] | unknown[]
+                ? Flatten<ReadonlyFirst>
+                : Readonly<[ReadonlyFirst]>
+          ),
+          ...Flatten<ReadonlyRest>
+        ]>
+    : T;
+```
+
+```ts
+// ['a', 'b', 'c']
+type AFlatten = Flatten<[['a'], 'b', [['c']]]>;
+type BFlatten = Flatten<[['a'], 'b', [readonly ['c']]]>;
+
+// readonly ['a', 'b', 'c']
+type CFlatten = Flatten<readonly [['a'], 'b', [['c']]]>;
+type DFlatten = Flatten<readonly [['a'], 'b', readonly [readonly ['c']]]>;
+type EFlatten = Flatten<readonly [readonly ['a'], 'b', [['c']]]>;
+type FFlatten = Flatten<readonly [readonly ['a'], 'b', [readonly ['c']]]>;
+type GFlatten = Flatten<readonly [readonly ['a'], 'b', readonly [readonly ['c']]]>;
+type HFlatten = Flatten<[readonly ['a'], 'b', [readonly ['c']]]>;
 ```
 
 ### Merge\<T, U\>
