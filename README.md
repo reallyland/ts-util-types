@@ -89,10 +89,11 @@ type BCloned = Cloned<B>;
 ### Combinations\<T\>
 
 ```ts
+type IsEmptyArray_<T extends readonly unknown[]> = T extends readonly [] ? true : false;
 type CombinationsUtil_<T extends readonly unknown[], Key = T[number]> =
   Key extends Key
     ? [Key] | (
-      IsEmptyArray<ShiftUntil<T, Key>> extends true
+      IsEmptyArray_<ShiftUntil<T, Key>> extends true
         ? never
         : [Key, ...CombinationsUtil_<ShiftUntil<T, Key>>]
     )
