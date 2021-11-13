@@ -34,6 +34,8 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Flatten\<T\>](#flattent)
   - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
+  - [ObjectEntries\<T\>](#objectentriest)
+  - [ObjectFromEntries\<T\>](#objectfromentriest)
   - [OmitKey\<T\>](#omitkeyt)
   - [Pop\<T\>](#popt)
   - [Shift\<T\>](#shiftt)
@@ -623,6 +625,65 @@ type ANullableNull = Nullable<number, null>;
 
 // number | undefined;
 type ANullableUndefined = Nullable<number, undefined>;
+```
+
+### ObjectEntries\<T\>
+
+```ts
+type ObjectEntries<T> =
+  T extends Record<infer Key, unknown>
+      ? T extends readonly unknown[]
+        ? never
+        : Key extends Key
+          ? [Key, T[Key]]
+          : never
+    : never;
+```
+
+```ts
+// ["a", 1] | ["b", "2"] | ["c", () => true]
+type AObjectEntries = ObjectEntries<{ a: 1, b: '2', c: () => true }>;
+type BObjectEntries = ObjectEntries<Readonly<{ a: 1, b: '2', c: () => true }>>;
+
+// never
+type CObjectEntries = ObjectEntries<() => true>;
+type DObjectEntries = ObjectEntries<Readonly<() => true>>;
+type EObjectEntries = ObjectEntries<[1, '2', true, () => true]>;
+type FObjectEntries = ObjectEntries<Readonly<[1, '2', true, () => true]>>;
+```
+
+### ObjectFromEntries\<T\>
+
+```ts
+type ObjectFromEntries<T extends readonly [number | string | symbol, unknown]> = {
+  [K in T[0]]: T extends readonly [K, infer Value] ? Value : never;
+};
+```
+
+```ts
+// {
+//     a: 1;
+//     b: "2";
+//     c: () => true;
+// }
+type AObjectFromEntries = ObjectFromEntries<["a", 1] | ["b", "2"] | ["c", () => true]>;
+
+// {
+//     a: 1;
+//     b: "2";
+//     c: () => true;
+// }
+type BObjectFromEntries = ObjectFromEntries<[1, 'a'] | [2, true]>;
+
+// {
+//     1: "a";
+// }
+type CObjectFromEntries = ObjectFromEntries<readonly [1, 'a']>;
+
+// {
+//     a: 1;
+// }
+type DObjectFromEntries = ObjectFromEntries<readonly ['a', 1]>;
 ```
 
 ### OmitKey\<T\>
