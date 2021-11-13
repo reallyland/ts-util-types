@@ -41,6 +41,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Shift\<T\>](#shiftt)
   - [ShiftUntil\<T, Key\>](#shiftuntilt-key)
   - [TupleRecord\<T\>](#tuplerecordt)
+  - [UnionToTuple\<T\>](#uniontotuplet)
   - [Unshift\<T, Elements\>](#unshiftt-elements)
   - [Values\<T\>](#valuest)
 - [License](#license)
@@ -88,20 +89,20 @@ type BCloned = Cloned<B>;
 ### Combinations\<T\>
 
 ```ts
-type _CombinationsUtil<T extends readonly unknown[], _Key = T[number]> =
-  _Key extends _Key
-    ? [_Key] | (
-      IsEmptyArray<ShiftUntil<T, _Key>> extends true
+type CombinationsUtil_<T extends readonly unknown[], Key = T[number]> =
+  Key extends Key
+    ? [Key] | (
+      IsEmptyArray<ShiftUntil<T, Key>> extends true
         ? never
-        : [_Key, ..._CombinationsUtil<ShiftUntil<T, _Key>>]
+        : [Key, ...CombinationsUtil_<ShiftUntil<T, Key>>]
     )
     : never;
 
 type Combinations<T extends readonly unknown[]> =
   T extends readonly unknown[]
     ? T extends unknown[]
-      ? _CombinationsUtil<T>
-      : Readonly<_CombinationsUtil<T>>
+      ? CombinationsUtil_<T>
+      : Readonly<CombinationsUtil_<T>>
     : never;
 ```
 
@@ -109,14 +110,14 @@ type Combinations<T extends readonly unknown[]> =
 type ACombinations = Combinations<readonly []>; // never
 type BCombinations = Combinations<[]>; // never
 
-type CCombinations = Combinations<readonly ['a']>; // readonly ['a']
-type DCombinations = Combinations<['a']>; // ['a']
+type CCombinations = Combinations<readonly ["a"]>; // readonly ["a"]
+type DCombinations = Combinations<["a"]>; // ["a"]
 
-type ECombinations = Combinations<readonly ['a', 'b']>; // readonly ['a'] | readonly ['b'] | readonly ['a', 'b']
-type FCombinations = Combinations<['a', 'b']>; // ['a'] | ['b'] | ['a', 'b']
+type ECombinations = Combinations<readonly ["a", "b"]>; // readonly ["a"] | readonly ["b"] | readonly ["a", "b"]
+type FCombinations = Combinations<["a", "b"]>; // ["a"] | ["b"] | ["a", "b"]
 
-type GCombinations = Combinations<readonly ['a', 'b', 'c']>; // readonly ['a'] | readonly ['b'] | readonly ['c'] | readonly ['a', 'b'] | readonly ['a', 'c'] | readonly ['b', 'c'] | readonly ['a', 'b', 'c']
-type HCombinations = Combinations<['a', 'b', 'c']>; // ['a'] | ['b'] | ['c'] | ['a', 'b'] | ['a', 'c'] | ['b', 'c'] | ['a', 'b', 'c']
+type GCombinations = Combinations<readonly ["a", "b", "c"]>; // readonly ["a"] | readonly ["b"] | readonly ["c"] | readonly ["a", "b"] | readonly ["a", "c"] | readonly ["b", "c"] | readonly ["a", "b", "c"]
+type HCombinations = Combinations<["a", "b", "c"]>; // ["a"] | ["b"] | ["c"] | ["a", "b"] | ["a", "c"] | ["b", "c"] | ["a", "b", "c"]
 ```
 
 ### DeepExecWith\<T\>
@@ -179,7 +180,7 @@ type ANeverPrimitives = NeverPrimitives<{
         c: 1;
         d: [1, 2, 3];
         e(a?: string): Promise<void>;
-        f: '1';
+        f: "1";
         g: null;
         h: undefined;
         i: Symbol;
@@ -189,7 +190,7 @@ type ANeverPrimitives = NeverPrimitives<{
     c: 1;
     d: [1, 2, 3];
     e(a?: string): Promise<void>;
-    f: '1';
+    f: "1";
     g: null;
     h: undefined;
     i: Symbol;
@@ -499,12 +500,12 @@ type ExcludeKey<T, Key extends keyof T> = Exclude<keyof T, Key>;
 ```
 
 ```ts
-// 'a' | 'c'
+// "a" | "c"
 type AExcludeKey = ExcludeKey<{
   a: boolean;
   b: number;
   c: string;
-}, 'b'>;
+}, "b">;
 ```
 
 ### ExtractKey\<T, Key\>
@@ -516,12 +517,12 @@ type ExtractKey<T, Key extends keyof T> = Extract<keyof T, Key>;
 ```
 
 ```ts
-// 'b'
+// "b"
 type AExtractKey = ExtractKey<{
   a: boolean;
   b: number;
   c: string;
-}, 'b'>;
+}, "b">;
 ```
 
 ### Flatten\<T\>
@@ -550,17 +551,17 @@ type Flatten<T extends readonly unknown[]> =
 ```
 
 ```ts
-// ['a', 'b', 'c']
-type AFlatten = Flatten<[['a'], 'b', [['c']]]>;
-type BFlatten = Flatten<[['a'], 'b', [readonly ['c']]]>;
+// ["a", "b", "c"]
+type AFlatten = Flatten<[["a"], "b", [["c"]]]>;
+type BFlatten = Flatten<[["a"], "b", [readonly ["c"]]]>;
 
-// readonly ['a', 'b', 'c']
-type CFlatten = Flatten<readonly [['a'], 'b', [['c']]]>;
-type DFlatten = Flatten<readonly [['a'], 'b', readonly [readonly ['c']]]>;
-type EFlatten = Flatten<readonly [readonly ['a'], 'b', [['c']]]>;
-type FFlatten = Flatten<readonly [readonly ['a'], 'b', [readonly ['c']]]>;
-type GFlatten = Flatten<readonly [readonly ['a'], 'b', readonly [readonly ['c']]]>;
-type HFlatten = Flatten<[readonly ['a'], 'b', [readonly ['c']]]>;
+// readonly ["a", "b", "c"]
+type CFlatten = Flatten<readonly [["a"], "b", [["c"]]]>;
+type DFlatten = Flatten<readonly [["a"], "b", readonly [readonly ["c"]]]>;
+type EFlatten = Flatten<readonly [readonly ["a"], "b", [["c"]]]>;
+type FFlatten = Flatten<readonly [readonly ["a"], "b", [readonly ["c"]]]>;
+type GFlatten = Flatten<readonly [readonly ["a"], "b", readonly [readonly ["c"]]]>;
+type HFlatten = Flatten<[readonly ["a"], "b", [readonly ["c"]]]>;
 ```
 
 ### Merge\<T, U\>
@@ -642,14 +643,14 @@ type ObjectEntries<T> =
 
 ```ts
 // ["a", 1] | ["b", "2"] | ["c", () => true]
-type AObjectEntries = ObjectEntries<{ a: 1, b: '2', c: () => true }>;
-type BObjectEntries = ObjectEntries<Readonly<{ a: 1, b: '2', c: () => true }>>;
+type AObjectEntries = ObjectEntries<{ a: 1, b: "2", c: () => true }>;
+type BObjectEntries = ObjectEntries<Readonly<{ a: 1, b: "2", c: () => true }>>;
 
 // never
 type CObjectEntries = ObjectEntries<() => true>;
 type DObjectEntries = ObjectEntries<Readonly<() => true>>;
-type EObjectEntries = ObjectEntries<[1, '2', true, () => true]>;
-type FObjectEntries = ObjectEntries<Readonly<[1, '2', true, () => true]>>;
+type EObjectEntries = ObjectEntries<[1, "2", true, () => true]>;
+type FObjectEntries = ObjectEntries<Readonly<[1, "2", true, () => true]>>;
 ```
 
 ### ObjectFromEntries\<T\>
@@ -673,17 +674,17 @@ type AObjectFromEntries = ObjectFromEntries<["a", 1] | ["b", "2"] | ["c", () => 
 //     b: "2";
 //     c: () => true;
 // }
-type BObjectFromEntries = ObjectFromEntries<[1, 'a'] | [2, true]>;
+type BObjectFromEntries = ObjectFromEntries<[1, "a"] | [2, true]>;
 
 // {
 //     1: "a";
 // }
-type CObjectFromEntries = ObjectFromEntries<readonly [1, 'a']>;
+type CObjectFromEntries = ObjectFromEntries<readonly [1, "a"]>;
 
 // {
 //     a: 1;
 // }
-type DObjectFromEntries = ObjectFromEntries<readonly ['a', 1]>;
+type DObjectFromEntries = ObjectFromEntries<readonly ["a", 1]>;
 ```
 
 ### OmitKey\<T\>
@@ -703,12 +704,12 @@ interface A {
 //     a: boolean;
 //     c: string;
 // }
-type AOmitKey = OmitKey<A, 'b'>;
+type AOmitKey = OmitKey<A, "b">;
 
 // {
 //     c: string;
 // }
-type BOmitKey = OmitKey<A, 'b' | 'a'>;
+type BOmitKey = OmitKey<A, "b" | "a">;
 ```
 
 ### Pop\<T\>
@@ -723,10 +724,10 @@ type Pop<T extends readonly unknown[]> =
 ```
 
 ```ts
-type APop = Pop<['a']>; // 'a'
-type BPop = Pop<['a', 'b']>; // 'b'
-type CPop = Pop<readonly ['a']>; // 'a'
-type DPop = Pop<readonly ['a', 'b']>; // 'b'
+type APop = Pop<["a"]>; // "a"
+type BPop = Pop<["a", "b"]>; // "b"
+type CPop = Pop<readonly ["a"]>; // "a"
+type DPop = Pop<readonly ["a", "b"]>; // "b"
 ```
 
 ### Shift\<T\>
@@ -741,13 +742,13 @@ type Shift<T extends readonly unknown[]> =
 ```
 
 ```ts
-type AShift = Shift<readonly ['a']>; // readonly []
-type BShift = Shift<readonly ['a', 'b']>; // readonly ['b']
-type CShift = Shift<readonly ['a', 'b', 'c']>; // readonly ['b', 'c']
+type AShift = Shift<readonly ["a"]>; // readonly []
+type BShift = Shift<readonly ["a", "b"]>; // readonly ["b"]
+type CShift = Shift<readonly ["a", "b", "c"]>; // readonly ["b", "c"]
 
-type AShift2 = Shift<['a']>; // []
-type BShift2 = Shift<['a', 'b']>; // ['b']
-type CShift2 = Shift<['a', 'b', 'c']>; // ['b', 'c']
+type AShift2 = Shift<["a"]>; // []
+type BShift2 = Shift<["a", "b"]>; // ["b"]
+type CShift2 = Shift<["a", "b", "c"]>; // ["b", "c"]
 ```
 
 ### ShiftUntil\<T, Key\>
@@ -766,20 +767,20 @@ type ShiftUntil<T extends readonly unknown[], Key extends T[number]> =
 ```
 
 ```ts
-type AShiftUntil = ShiftUntil<readonly ['a'], 'a'>; // readonly []
-type AShiftUntil2 = ShiftUntil<['a'], 'a'>; // []
+type AShiftUntil = ShiftUntil<readonly ["a"], "a">; // readonly []
+type AShiftUntil2 = ShiftUntil<["a"], "a">; // []
 
-type BShiftUntil = ShiftUntil<readonly ['a', 'b'], 'a'>; // readonly ['b']
-type BShiftUntil2 = ShiftUntil<readonly ['a', 'b'], 'b'>; // readonly []
-type BShiftUntil3 = ShiftUntil<['a', 'b'], 'a'>; // ['b']
-type BShiftUntil4 = ShiftUntil<['a', 'b'], 'b'>; // []
+type BShiftUntil = ShiftUntil<readonly ["a", "b"], "a">; // readonly ["b"]
+type BShiftUntil2 = ShiftUntil<readonly ["a", "b"], "b">; // readonly []
+type BShiftUntil3 = ShiftUntil<["a", "b"], "a">; // ["b"]
+type BShiftUntil4 = ShiftUntil<["a", "b"], "b">; // []
 
-type CShiftUntil = ShiftUntil<readonly ['a', 'b', 'c'], 'a'>; // readonly ['b', 'c']
-type CShiftUntil2 = ShiftUntil<readonly ['a', 'b', 'c'], 'b'>; // readonly ['c']
-type CShiftUntil3 = ShiftUntil<readonly ['a', 'b', 'c'], 'c'>; // readonly []
-type CShiftUntil4 = ShiftUntil<['a', 'b', 'c'], 'a'>; // ['b', 'c']
-type CShiftUntil5 = ShiftUntil<['a', 'b', 'c'], 'b'>; // ['c']
-type CShiftUntil6 = ShiftUntil<['a', 'b', 'c'], 'c'>; // []
+type CShiftUntil = ShiftUntil<readonly ["a", "b", "c"], "a">; // readonly ["b", "c"]
+type CShiftUntil2 = ShiftUntil<readonly ["a", "b", "c"], "b">; // readonly ["c"]
+type CShiftUntil3 = ShiftUntil<readonly ["a", "b", "c"], "c">; // readonly []
+type CShiftUntil4 = ShiftUntil<["a", "b", "c"], "a">; // ["b", "c"]
+type CShiftUntil5 = ShiftUntil<["a", "b", "c"], "b">; // ["c"]
+type CShiftUntil6 = ShiftUntil<["a", "b", "c"], "c">; // []
 ```
 
 ### TupleRecord\<T\>
@@ -797,17 +798,50 @@ type TupleRecord<T extends (unknown [] | ReadonlyArray<unknown>)> = DeepReadonly
 //     readonly values: readonly ["a", "b"];
 // }
 type ATupleRecord = TupleRecord<[
-    'a',
-    'b',
+    "a",
+    "b",
 ]>
 
-const a2 = ['a', 'b'] as const;
+const a2 = ["a", "b"] as const;
 
 // {
 //     readonly keys: "a" | "b";
 //     readonly values: readonly ["a", "b"];
 // }
 type ATupleRecord2 = TupleRecord<typeof a2>;
+```
+
+### UnionToTuple\<T\>
+
+```ts
+type UnionFn_<T> = T extends T ? (arg: T) => 0 : never;
+type UnionFnToIntersectionFn_<T> = (T extends T ? (arg: T) => 0 : never) extends (arg: infer U) => 0 ? U : never;
+type LastUnionFromIntersectionFn_<T> = T extends (arg: infer U) => 0 ? U : never;
+type LastUnion_<T> = LastUnionFromIntersectionFn_<
+  UnionFnToIntersectionFn_<
+    UnionFn_<T>
+  >
+>;
+type UnionToTupleUtil_<T, LastKey = LastUnion_<T>> =
+  [T] extends [never]
+    ? []
+    : [...UnionToTupleUtil_<Exclude<T, LastKey>>, LastKey];
+
+type UnionToTuple<T> = UnionToTupleUtil_<T>;
+```
+
+```ts
+// ((arg: "a") => 0) | ((arg: "b") => 0)
+type AUnionFn_ = UnionFn_<"a" | "b">;
+
+// ((arg: "a") => 0) & ((arg: "b") => 0)
+type AUnionFnToIntersectionFn_ = UnionFnToIntersectionFn_<AUnionFn_>;
+
+// "b"
+type ALastUnion_ = LastUnionFromIntersectionFn_<AUnionFnToIntersectionFn_>;
+
+type AUnionToTuple = UnionToTuple<"a" | "b">; // ["a", "b"]
+type AUnionToTuple2 = UnionToTuple<"a" | "b" | "c">; // ["a", "b", "c"]
 ```
 
 ### Unshift\<T, Elements\>
@@ -822,14 +856,14 @@ type Unshift<T extends readonly unknown[], Elements extends readonly unknown[]> 
 ```
 
 ```ts
-type AUnshift = Unshift<['a'], ['b']>; // ['b', 'c']
-type BUnshift = Unshift<['a'], ['b', 'c']>; // ['b', 'c', 'a']
-type CUnshift = Unshift<readonly ['a'], ['b']>; // readonly ['b', 'a']
-type DUnshift = Unshift<readonly ['a'], ['b', 'c']>; // readonly ['b', 'c', 'a']
-type EUnshift = Unshift<['a'], readonly ['b']>; // ['b', 'a']
-type FUnshift = Unshift<['a'], readonly ['b', 'c']>; // ['b', 'c', 'a']
-type GUnshift = Unshift<readonly ['a'], readonly ['b']>; // readonly ['b', 'a']
-type HUnshift = Unshift<readonly ['a'], readonly ['b', 'c']>; // readonly ['b', 'c', 'a']
+type AUnshift = Unshift<["a"], ["b"]>; // ["b", "c"]
+type BUnshift = Unshift<["a"], ["b", "c"]>; // ["b", "c", "a"]
+type CUnshift = Unshift<readonly ["a"], ["b"]>; // readonly ["b", "a"]
+type DUnshift = Unshift<readonly ["a"], ["b", "c"]>; // readonly ["b", "c", "a"]
+type EUnshift = Unshift<["a"], readonly ["b"]>; // ["b", "a"]
+type FUnshift = Unshift<["a"], readonly ["b", "c"]>; // ["b", "c", "a"]
+type GUnshift = Unshift<readonly ["a"], readonly ["b"]>; // readonly ["b", "a"]
+type HUnshift = Unshift<readonly ["a"], readonly ["b", "c"]>; // readonly ["b", "c", "a"]
 ```
 
 ### Values\<T\>
