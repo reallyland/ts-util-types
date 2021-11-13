@@ -21,6 +21,7 @@ This hosts all the snippets for different utility types that are useful for cert
 - [Pre-requisite](#pre-requisite)
 - [Utility types](#utility-types)
   - [Cloned\<T\>](#clonedt)
+  - [Combinations\<T\>](#combinationst)
   - [DeepExecWith\<T\>](#deepexecwitht)
   - [DeepNonNullable\<T\>](#deepnonnullablet)
   - [DeepNonReadonly\<T\>](#deepnonreadonlyt)
@@ -81,6 +82,40 @@ type B = A & { d: boolean };
 //   d: boolean;
 // }
 type BCloned = Cloned<B>;
+```
+
+### Combinations\<T\>
+
+```ts
+type _CombinationsUtil<T extends readonly unknown[], _Key = T[number]> =
+  _Key extends _Key
+    ? [_Key] | (
+      IsEmptyArray<ShiftUntil<T, _Key>> extends true
+        ? never
+        : [_Key, ..._CombinationsUtil<ShiftUntil<T, _Key>>]
+    )
+    : never;
+
+type Combinations<T extends readonly unknown[]> =
+  T extends readonly unknown[]
+    ? T extends unknown[]
+      ? _CombinationsUtil<T>
+      : Readonly<_CombinationsUtil<T>>
+    : never;
+```
+
+```ts
+type ACombinations = Combinations<readonly []>; // never
+type BCombinations = Combinations<[]>; // never
+
+type CCombinations = Combinations<readonly ['a']>; // readonly ['a']
+type DCombinations = Combinations<['a']>; // ['a']
+
+type ECombinations = Combinations<readonly ['a', 'b']>; // readonly ['a'] | readonly ['b'] | readonly ['a', 'b']
+type FCombinations = Combinations<['a', 'b']>; // ['a'] | ['b'] | ['a', 'b']
+
+type GCombinations = Combinations<readonly ['a', 'b', 'c']>; // readonly ['a'] | readonly ['b'] | readonly ['c'] | readonly ['a', 'b'] | readonly ['a', 'c'] | readonly ['b', 'c'] | readonly ['a', 'b', 'c']
+type HCombinations = Combinations<['a', 'b', 'c']>; // ['a'] | ['b'] | ['c'] | ['a', 'b'] | ['a', 'c'] | ['b', 'c'] | ['a', 'b', 'c']
 ```
 
 ### DeepExecWith\<T\>
@@ -507,12 +542,12 @@ type AExtractKey = ExtractKey<{
 ### Flatten\<T\>
 
 ```ts
-type Flatten<T extends readonly unknown[] | unknown[]> =
+type Flatten<T extends readonly unknown[]> =
   T extends readonly [infer ReadonlyFirst, ...infer ReadonlyRest]
     ? T extends [infer First, ...infer Rest]
       ? [
           ...(
-            First extends readonly unknown[] | unknown[]
+            First extends readonly unknown[]
                 ? Flatten<First>
                 : [First]
           ),
@@ -520,7 +555,7 @@ type Flatten<T extends readonly unknown[] | unknown[]> =
         ]
       : Readonly<[
           ...(
-            ReadonlyFirst extends readonly unknown[] | unknown[]
+            ReadonlyFirst extends readonly unknown[]
                 ? Flatten<ReadonlyFirst>
                 : Readonly<[ReadonlyFirst]>
           ),
@@ -635,7 +670,7 @@ type BOmitKey = OmitKey<A, 'b' | 'a'>;
 ### Pop\<T\>
 
 ```ts
-type Pop<T extends readonly unknown[] | unknown[]> =
+type Pop<T extends readonly unknown[]> =
   T extends readonly [...infer _ReadonlyRest, infer ReadonlyLast]
     ? T extends [...infer _Rest, infer Last]
       ? Last
@@ -653,7 +688,7 @@ type DPop = Pop<readonly ['a', 'b']>; // 'b'
 ### Shift\<T\>
 
 ```ts
-type Shift<T extends readonly unknown[] | unknown[]> =
+type Shift<T extends readonly unknown[]> =
     T extends readonly [infer _ReadonlyFirst, ...infer ReadonlyRest]
         ? T extends [infer _First, ...infer Rest]
             ? Rest
@@ -674,7 +709,7 @@ type CShift2 = Shift<['a', 'b', 'c']>; // ['b', 'c']
 ### ShiftUntil\<T, Key\>
 
 ```ts
-type ShiftUntil<T extends readonly unknown[] | unknown[], Key extends T[number]> =
+type ShiftUntil<T extends readonly unknown[], Key extends T[number]> =
   T extends readonly [infer ReadonlyFirst, ...infer ReadonlyRest]
     ? T extends [infer First, ...infer Rest]
       ? First extends Key
@@ -734,7 +769,7 @@ type ATupleRecord2 = TupleRecord<typeof a2>;
 ### Unshift\<T, Elements\>
 
 ```ts
-type Unshift<T extends readonly unknown[] | unknown[], Elements extends readonly unknown[] | unknown[]> =
+type Unshift<T extends readonly unknown[], Elements extends readonly unknown[]> =
     T extends readonly unknown[]
         ? T extends unknown[]
           ? [...Elements, ...T]
