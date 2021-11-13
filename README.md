@@ -29,9 +29,8 @@ This hosts all the snippets for different utility types that are useful for cert
   - [DeepPartial\<T\>](#deeppartialt)
   - [DeepReadonly\<T\>](#deepreadonlyt)
   - [DeepRequired\<T\>](#deeprequiredt)
-  - [Entries\<T\>](#entriest)
-  - [ExcludeKey\<T, K\>](#excludekeyt-k)
-  - [ExtractKey\<T, K\>](#extractkeyt-k)
+  - [ExcludeKey\<T, Key\>](#excludekeyt-key)
+  - [ExtractKey\<T, Key\>](#extractkeyt-key)
   - [Flatten\<T\>](#flattent)
   - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
@@ -121,7 +120,7 @@ type HCombinations = Combinations<['a', 'b', 'c']>; // ['a'] | ['b'] | ['c'] | [
 ### DeepExecWith\<T\>
 
 ```ts
-type DeepExecWith<T, Condition> = T extends Record<string, unknown>
+type DeepExecWith<T, Condition> = T extends Record<infer _Key, unknown>
     ? Condition
     : T extends (...args: any) => unknown
         ? T
@@ -489,28 +488,12 @@ type ADeepRequired = DeepRequired<DeepPartial<{
 }>>;
 ```
 
-### Entries\<T\>
+### ExcludeKey\<T, Key\>
+
+An aliased of [Exclude] but with typed `Key`s in `T`.
 
 ```ts
-type Entries<T> = {
-    [K in keyof T]: [K, T[K]];
-}[keyof T][];
-```
-
-```ts
-// (["a", "a1"] | ["b", "b1"])[]
-type AEntries = Entries<{
-    a: 'a1',
-    b: 'b1',
-}>;
-```
-
-### ExcludeKey\<T, K\>
-
-An aliased of [Exclude] but with typed `K`s in `T`.
-
-```ts
-type ExcludeKey<T, K extends keyof T> = Exclude<keyof T, K>;
+type ExcludeKey<T, Key extends keyof T> = Exclude<keyof T, Key>;
 ```
 
 ```ts
@@ -522,12 +505,12 @@ type AExcludeKey = ExcludeKey<{
 }, 'b'>;
 ```
 
-### ExtractKey\<T, K\>
+### ExtractKey\<T, Key\>
 
-An aliased of [Extract] but with typed `K`s in `T`.
+An aliased of [Extract] but with typed `Key`s in `T`.
 
 ```ts
-type ExtractKey<T, K extends keyof T> = Extract<keyof T, K>;
+type ExtractKey<T, Key extends keyof T> = Extract<keyof T, Key>;
 ```
 
 ```ts
