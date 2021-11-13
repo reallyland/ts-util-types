@@ -34,6 +34,8 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Merge\<T, U\>](#merget-u)
   - [Nullish + Nullable\<T, U\>](#nullish--nullablet-u)
   - [OmitKey\<T\>](#omitkeyt)
+  - [Shift\<T\>](#shiftt)
+  - [ShiftUntil\<T, Key\>](#shiftuntilt-key)
   - [TupleRecord\<T\>](#tuplerecordt)
   - [Values\<T\>](#valuest)
 - [License](#license)
@@ -586,6 +588,59 @@ type AOmitKey = OmitKey<A, 'b'>;
 //     c: string;
 // }
 type BOmitKey = OmitKey<A, 'b' | 'a'>;
+```
+
+### Shift\<T\>
+
+```ts
+type Shift<T extends unknown[] | readonly unknown[]> =
+    T extends readonly [infer _ReadonlyFirst, ...infer ReadonlyRest]
+        ? T extends [infer _First, ...infer Rest]
+            ? Rest
+            : Readonly<ReadonlyRest>
+        : [];
+```
+
+```ts
+type AShift = Shift<readonly ['a']>; // readonly []
+type BShift = Shift<readonly ['a', 'b']>; // readonly ['b']
+type CShift = Shift<readonly ['a', 'b', 'c']>; // readonly ['b', 'c']
+
+type AShift2 = Shift<['a']>; // []
+type BShift2 = Shift<['a', 'b']>; // ['b']
+type CShift2 = Shift<['a', 'b', 'c']>; // ['b', 'c']
+```
+
+### ShiftUntil\<T, Key\>
+
+```ts
+type ShiftUntil<T extends unknown[] | readonly unknown[], Key extends T[number]> =
+  T extends readonly [infer ReadonlyFirst, ...infer ReadonlyRest]
+    ? T extends [infer First, ...infer Rest]
+      ? First extends Key
+        ? Rest
+        : ShiftUntil<Rest, Key>
+      : ReadonlyFirst extends Key
+        ? Readonly<ReadonlyRest>
+        : ShiftUntil<Readonly<ReadonlyRest>, Key>
+    : T;
+```
+
+```ts
+type AShiftUntil = ShiftUntil<readonly ['a'], 'a'>; // readonly []
+type AShiftUntil2 = ShiftUntil<['a'], 'a'>; // []
+
+type BShiftUntil = ShiftUntil<readonly ['a', 'b'], 'a'>; // readonly ['b']
+type BShiftUntil2 = ShiftUntil<readonly ['a', 'b'], 'b'>; // readonly []
+type BShiftUntil3 = ShiftUntil<['a', 'b'], 'a'>; // ['b']
+type BShiftUntil4 = ShiftUntil<['a', 'b'], 'b'>; // []
+
+type CShiftUntil = ShiftUntil<readonly ['a', 'b', 'c'], 'a'>; // readonly ['b', 'c']
+type CShiftUntil2 = ShiftUntil<readonly ['a', 'b', 'c'], 'b'>; // readonly ['c']
+type CShiftUntil3 = ShiftUntil<readonly ['a', 'b', 'c'], 'c'>; // readonly []
+type CShiftUntil4 = ShiftUntil<['a', 'b', 'c'], 'a'>; // ['b', 'c']
+type CShiftUntil5 = ShiftUntil<['a', 'b', 'c'], 'b'>; // ['c']
+type CShiftUntil6 = ShiftUntil<['a', 'b', 'c'], 'c'>; // []
 ```
 
 ### TupleRecord\<T\>
