@@ -37,6 +37,7 @@ This hosts all the snippets for different utility types that are useful for cert
   - [Shift\<T\>](#shiftt)
   - [ShiftUntil\<T, Key\>](#shiftuntilt-key)
   - [TupleRecord\<T\>](#tuplerecordt)
+  - [Unshift\<T, Elements\>](#unshiftt-elements)
   - [Values\<T\>](#valuest)
 - [License](#license)
 
@@ -593,7 +594,7 @@ type BOmitKey = OmitKey<A, 'b' | 'a'>;
 ### Shift\<T\>
 
 ```ts
-type Shift<T extends unknown[] | readonly unknown[]> =
+type Shift<T extends readonly unknown[] | unknown[]> =
     T extends readonly [infer _ReadonlyFirst, ...infer ReadonlyRest]
         ? T extends [infer _First, ...infer Rest]
             ? Rest
@@ -614,7 +615,7 @@ type CShift2 = Shift<['a', 'b', 'c']>; // ['b', 'c']
 ### ShiftUntil\<T, Key\>
 
 ```ts
-type ShiftUntil<T extends unknown[] | readonly unknown[], Key extends T[number]> =
+type ShiftUntil<T extends readonly unknown[] | unknown[], Key extends T[number]> =
   T extends readonly [infer ReadonlyFirst, ...infer ReadonlyRest]
     ? T extends [infer First, ...infer Rest]
       ? First extends Key
@@ -669,6 +670,28 @@ const a2 = ['a', 'b'] as const;
 //     readonly values: readonly ["a", "b"];
 // }
 type ATupleRecord2 = TupleRecord<typeof a2>;
+```
+
+### Unshift\<T, Elements\>
+
+```ts
+type Unshift<T extends readonly unknown[] | unknown[], Elements extends readonly unknown[] | unknown[]> =
+    T extends readonly unknown[]
+        ? T extends unknown[]
+          ? [...Elements, ...T]
+          : Readonly<[...Elements, ...T]>
+        : T;
+```
+
+```ts
+type AUnshift = Unshift<['a'], ['b']>; // ['b', 'c']
+type BUnshift = Unshift<['a'], ['b', 'c']>; // ['b', 'c', 'a']
+type CUnshift = Unshift<readonly ['a'], ['b']>; // readonly ['b', 'a']
+type DUnshift = Unshift<readonly ['a'], ['b', 'c']>; // readonly ['b', 'c', 'a']
+type EUnshift = Unshift<['a'], readonly ['b']>; // ['b', 'a']
+type FUnshift = Unshift<['a'], readonly ['b', 'c']>; // ['b', 'c', 'a']
+type GUnshift = Unshift<readonly ['a'], readonly ['b']>; // readonly ['b', 'a']
+type HUnshift = Unshift<readonly ['a'], readonly ['b', 'c']>; // readonly ['b', 'c', 'a']
 ```
 
 ### Values\<T\>
